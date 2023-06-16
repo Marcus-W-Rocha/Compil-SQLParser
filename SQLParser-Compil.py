@@ -28,10 +28,10 @@ class SQLParser:
         self.statement()
 
     def statement(self):
-        if self.current_token == "CREATE":
-            self.create_statement()
-        elif self.current_token == "USE":
+        if self.current_token == "USE":
             self.select_statement()
+        elif self.current_token == "CREATE":
+            self.create_statement()
         elif self.current_token == "INSERT":
             self.insert_statement()
         elif self.current_token == "SELECT":
@@ -45,33 +45,121 @@ class SQLParser:
         else:
             raise SyntaxError(f"Comando SQL inválido: {self.current_token}")
 
-    def create_statement(self):
-        self.match("CREATE")
-        # Implemente a lógica para analisar um comando CREATE
+    def where(self):
+        self.match("WHERE")
+        self.match(coluna)
+        self.match(operador)
+        self.match(valor)
+        
+    def use_statement(self):
+        self.match("USE")
+        self.match(tabela)
+        self.match(";")
+        # Implemente a lógica para analisar um comando USE
 
     def create_statement(self):
-        self.match("USE")
+        self.match("CREATE")
+        if self.current_token == "DATABASE":
+            self.match("DATABASE")
+            self.match(banco)
+            self.match(";")
+        if self.current_token == "TABLE":
+            self.match("TABLE")
+            self.match(tabela)
+            self.match("(")
+            self.match(coluna)
+            self.match(tipoDado)
+
+            self.match(",")
+            self.match(coluna)
+            self.match(tipoDado)
+            #colocar essa parte em loop de alguma forma (no texto prof coloca * )
+
+            self.match(")")
+            self.match(";")
         # Implemente a lógica para analisar um comando CREATE
 
     def insert_statement(self):
         self.match("INSERT")
+        self.match("INTO")
+        self.match(tabela)
+        self.match("(")
+        self.match(coluna)
+
+        self.match(",")
+        self.match(coluna)
+        #colocar essa parte em loop de alguma forma (no texto prof coloca * )
+        self.match(")")
+
+        self.match("VALUES")
+        self.match("(")
+        self.match(valor)
+
+        self.match(",")
+        self.match(valor)
+        #colocar essa parte em loop de alguma forma (no texto prof coloca * )
+
+        self.match(")")
+
         # Implemente a lógica para analisar um comando INSERT
 
     def select_statement(self):
         self.match("SELECT")
+        if self.current_token == "*":
+            self.match("*")
+            self.match("FROM")
+            self.match(tabela)
+            if self.current_token == "ORDER":
+                self.match("ORDER")
+                self.match("BY")
+                self.match("BY")
+                self.match(coluna)
+            elif self.current_token == "WHERE":
+                self.match("WHERE")
+                self.match(coluna)
+                self.match(operator)
+                self.match(valor)
+        if self.current_token == coluna:
+           self.match(coluna)
+
+           self.match(coluna)
+           #colocar essa parte em loop de alguma forma (no texto prof coloca * )
+
+           self.match("FROM")
+           self.match(coluna)
+        self.match(";") 
+
+        
         # Implemente a lógica para analisar um comando SELECT
 
     def update_statement(self):
         self.match("UPDATE")
+        self.match(tabela)
+        self.match("SET")
+        self.match(coluna)
+        self.match(operator)
+        self.match(valor)
+
+        if self.current_token == "WHERE":
+            self.where()
         # Implemente a lógica para analisar um comando UPDATE
+        self.match(";")
 
     def delete_statement(self):
         self.match("DELETE")
-        # Implemente a lógica para analisar um comando DELETE
+        self.match("FROM")
+        self.match(tabela)
 
+        if  self.current_token == "WHERE":
+            self.where()
+        # Implemente a lógica para analisar um comando DELETE
+        self.match(";")
+   
     def truncate_statement(self):
         self.match("TRUNCATE")
-        # Implemente a lógica para analisar um comando TRUNCATE
+        self.match("TABLE")
+        self.match(tabela)
+        self.match(";")
 
 # Exemplo de uso
 query = "SELECT * FROM table_name"
