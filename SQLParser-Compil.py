@@ -1,49 +1,70 @@
 class SQLParser:
     def __init__(self, query):
         self.query = query
-        self.tokens = self.tokenize(query)
-        self.current_token = None
-        self.current_index = -1
-        self.next_token()
+        self.tokens = self.criarTokens(query)
+        self.token_atual = None
+        self.index_atual = -1
+        self.nextToken()
 
-    def tokenize(self, query):
-        # Implemente a função de tokenização para dividir a consulta em tokens
-        # Aqui está um exemplo simples para fins de demonstração:
-        return query.split()
+    def criarTokens(self, query):
+        query = query[:-1]
+        query = query + " ;"
+        query = query.strip()
+        delimitadores = ["(",")",","," "]
+        tokens= []
+        token_atual = ""
+        aspas = False
 
-    def next_token(self):
-        self.current_index += 1
-        if self.current_index < len(self.tokens):
-            self.current_token = self.tokens[self.current_index]
+        for a in query:
+            if a == "'":
+                aspas = not aspas
+                token_atual += a
+            elif a in delimitadores and not aspas:
+                if token_atual:
+                    tokens.append(token_atual)
+                token_atual= ""
+                if a != " ":
+                    tokens.append(a)
+            else:
+                token_atual += a
+        
+        if token_atual:
+            tokens.append(token_atual)
+        return tokens
+
+    def nextToken(self):
+        self.index_atual += 1
+        if self.index_atual < len(self.tokens):
+            self.token_atual = self.tokens[self.index_atual]
         else:
-            self.current_token = None
+            self.token_atual = None
 
     def match(self, expected_token):
-        if self.current_token == expected_token:
-            self.next_token()
+        if self.token_atual == expected_token:
+            self.nextToken()
         else:
-            raise SyntaxError(f"Token inesperado: {self.current_token}")
+            raise SyntaxError(f"Token inesperado: {self.token_atual}")
 
     def parse(self):
         self.statement()
 
     def statement(self):
-        if self.current_token == "USE":
+        if self.token_atual == "USE":
             self.select_statement()
-        elif self.current_token == "CREATE":
+        elif self.token_atual == "CREATE":
             self.create_statement()
-        elif self.current_token == "INSERT":
+        elif self.token_atual == "INSERT":
             self.insert_statement()
-        elif self.current_token == "SELECT":
+        elif self.token_atual == "SELECT":
             self.select_statement()
-        elif self.current_token == "UPDATE":
+        elif self.token_atual == "UPDATE":
             self.update_statement()
-        elif self.current_token == "DELETE":
+        elif self.token_atual == "DELETE":
             self.delete_statement()
-        elif self.current_token == "TRUNCATE":
+        elif self.token_atual == "TRUNCATE":
             self.truncate_statement()
         else:
-            raise SyntaxError(f"Comando SQL inválido: {self.current_token}")
+            raise SyntaxError(f"Comando SQL inválido: {self.token_atual}")
 
     def where(self):
         self.match("WHERE")
@@ -59,18 +80,18 @@ class SQLParser:
 
     def create_statement(self):
         self.match("CREATE")
-        if self.current_token == "DATABASE":
+        if self.token_atual == "DATABASE":
             self.match("DATABASE")
             self.match("<id>")
 
-        if self.current_token == "TABLE":
+        if self.token_atual == "TABLE":
             self.match("TABLE")
             self.match("<id>")
             self.match("(")
             self.match("<id>")
             self.match("<tipo>")
 
-            while self.current_token == ",":
+            while self.token_atual == ",":
                 self.match(",")
                 self.match("<id>")
                 self.match("<tipo>")
@@ -86,7 +107,7 @@ class SQLParser:
         self.match("(")
         self.match("<id>")
 
-        while self.current_token == ",":
+        while self.token_atual == ",":
             self.match(",")
             self.match("<id>")
         self.match(")")
@@ -95,7 +116,7 @@ class SQLParser:
         self.match("(")
         self.match("<valor>")
 
-        while self.current_token == ",":
+        while self.token_atual == ",":
             self.match(",")
             self.match("<valor>")
 
@@ -105,22 +126,20 @@ class SQLParser:
 
     def select_statement(self):
         self.match("SELECT")
-        if self.current_token == "*":
+        if self.token_atual == "*":
             self.match("*")
             self.match("FROM")
             self.match("<id>")
-            if self.current_token == "ORDER":
+            if self.token_atual == "ORDER":
                 self.match("ORDER")
                 self.match("BY")
                 self.match("<id>")
-            elif self.current_token == "WHERE":
-                self.match("WHERE")
-                self.match("<id>")
-                self.match("=")
-                self.match("<valor>")
-        if self.current_token == "<id>":
+            elif self.token_atual == "WHERE":
+                self.where()
+
+        if self.token_atual == "<id>":
            self.match("<id>")
-           while self.current_token == ",":
+           while self.token_atual == ",":
                self.match(",")
                self.match("<id>")
            self.match("FROM")
@@ -136,7 +155,7 @@ class SQLParser:
         self.match("=")
         self.match("<valor>")
 
-        if self.current_token == "WHERE":
+        if self.token_atual == "WHERE":
             self.where()
         self.match(";")
 # Implemente a lógica para analisar um comando UPDATE
@@ -146,7 +165,7 @@ class SQLParser:
         self.match("FROM")
         self.match("<id>")
 
-        if  self.current_token == "WHERE":
+        if  self.token_atual == "WHERE":
             self.where()
         self.match(";")
 # Implemente a lógica para analisar um comando DELETE
@@ -159,6 +178,7 @@ class SQLParser:
 # Implemente a lógica para analisar um comando TRUNCATE
 
 # Exemplo de uso
-query = "SELECT * FROM table_name"
+query = "SELECT <id>, <id>, <id>, <id> FROM <id> ;"
 parser = SQLParser(query)
 parser.parse()
+print("Analise completa com sucesso")
