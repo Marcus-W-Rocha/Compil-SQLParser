@@ -45,13 +45,21 @@ class SQLParser:
         else:
             raise SyntaxError(f"Comando SQL inválido: {self.current_token}")
 
-    def select_statement(self):
-        self.match("SELECT")
-        # Implemente a lógica para analisar um comando SELECT
+    def create_statement(self):
+        self.match("CREATE")
+        # Implemente a lógica para analisar um comando CREATE
+
+    def create_statement(self):
+        self.match("USE")
+        # Implemente a lógica para analisar um comando CREATE
 
     def insert_statement(self):
         self.match("INSERT")
         # Implemente a lógica para analisar um comando INSERT
+
+    def select_statement(self):
+        self.match("SELECT")
+        # Implemente a lógica para analisar um comando SELECT
 
     def update_statement(self):
         self.match("UPDATE")
@@ -61,30 +69,9 @@ class SQLParser:
         self.match("DELETE")
         # Implemente a lógica para analisar um comando DELETE
 
-    def create_statement(self):
-        self.match("CREATE")
-        # Implemente a lógica para analisar um comando CREATE
-
-    def alter_statement(self):
-        self.match("ALTER")
-        # Implemente a lógica para analisar um comando ALTER
-
-    def drop_statement(self):
-        self.match("DROP")
-        # Implemente a lógica para analisar um comando DROP
-
     def truncate_statement(self):
         self.match("TRUNCATE")
         # Implemente a lógica para analisar um comando TRUNCATE
-
-    def show_statement(self):
-        self.match("SHOW")
-        # Implemente a lógica para analisar um comando SHOW
-
-    def describe_statement(self):
-        self.match("DESCRIBE")
-        # Implemente a lógica para analisar um comando DESCRIBE
-
 
 # Exemplo de uso
 query = "SELECT * FROM table_name"
