@@ -48,27 +48,6 @@ class SQLParser:
     def parse(self):
         self.statement()
 
-    def parse_column_list(self):
-        while self.token_atual == ",":
-            self.match(",")
-            self.nextToken()
-
-    def expect_data_type(self):
-        self.nextToken()
-        token = self.token_atual
-        if token not in ('<tipo>', 'int', 'varchar', 'float', 'date', 'datetime', 'char', 'text', 'boolean'):
-            raise SyntaxError("Tipo de dado inválido: "+ token)
-        else:
-            self.nextToken()
-        while self.token_atual == ',':
-            self.match(",")
-            self.nextToken()
-            token = self.token_atual
-            if token not in ('<tipo>', 'int', 'varchar', 'float', 'date', 'datetime', 'char', 'text', 'boolean'):
-                raise SyntaxError("Tipo de dado inválido: "+ token)
-            else:
-                self.nextToken()
-
     def statement(self):
         if self.token_atual == "USE":
             self.select_statement()
@@ -87,108 +66,119 @@ class SQLParser:
         else:
             raise SyntaxError(f"Comando SQL inválido: {self.token_atual}")
 
-# WHERE
     def where(self):
         self.match("WHERE")
-        self.nextToken()
+        self.match("<id>")
         self.match("=")
-        self.nextToken()
+        self.match("<valor>")
         
-# USE
     def use_statement(self):
         self.match("USE")
-        self.nextToken()
+        self.match("<id>")
         self.match(";")
+# Implemente a lógica para analisar um comando USE
 
-# CREATE
     def create_statement(self):
         self.match("CREATE")
         if self.token_atual == "DATABASE":
             self.match("DATABASE")
-            self.nextToken()
+            self.match("<id>")
 
         if self.token_atual == "TABLE":
             self.match("TABLE")
-            self.nextToken()
+            self.match("<id>")
             self.match("(")
-            self.expect_data_type()
+            self.match("<id>")
+            self.match("<tipo>")
+
+            while self.token_atual == ",":
+                self.match(",")
+                self.match("<id>")
+                self.match("<tipo>")
 
             self.match(")")
         self.match(";")
+# Implemente a lógica para analisar um comando CREATE
 
-# INSERT
     def insert_statement(self):
         self.match("INSERT")
         self.match("INTO")
-        self.nextToken()
+        self.match("<id>")
         self.match("(")
-        self.nextToken()
-        self.parse_column_list()
+        self.match("<id>")
+
+        while self.token_atual == ",":
+            self.match(",")
+            self.match("<id>")
         self.match(")")
 
         self.match("VALUES")
         self.match("(")
-        self.nextToken()
-        self.parse_column_list()
+        self.match("<valor>")
+
+        while self.token_atual == ",":
+            self.match(",")
+            self.match("<valor>")
 
         self.match(")")
         self.match(";")
+# Implemente a lógica para analisar um comando INSERT
 
-# SELECT
     def select_statement(self):
         self.match("SELECT")
         if self.token_atual == "*":
             self.match("*")
             self.match("FROM")
-            self.nextToken()
+            self.match("<id>")
             if self.token_atual == "ORDER":
                 self.match("ORDER")
                 self.match("BY")
-                self.nextToken()
+                self.match("<id>")
             elif self.token_atual == "WHERE":
                 self.where()
 
-        elif self.tokens[self.index_atual+1] == ",":
-           self.nextToken()
-           self.parse_column_list()
+        if self.token_atual == "<id>":
+           self.match("<id>")
+           while self.token_atual == ",":
+               self.match(",")
+               self.match("<id>")
            self.match("FROM")
-           self.nextToken()
+           self.match("<id>")
         self.match(";") 
+# Implemente a lógica para analisar um comando SELECT
 
-# UPDATE
     def update_statement(self):
         self.match("UPDATE")
-        self.nextToken()
+        self.match("<id>")
         self.match("SET")
-        self.nextToken()
+        self.match("<id>")
         self.match("=")
-        self.nextToken()
+        self.match("<valor>")
 
         if self.token_atual == "WHERE":
             self.where()
         self.match(";")
+# Implemente a lógica para analisar um comando UPDATE
 
-# DELETE
     def delete_statement(self):
         self.match("DELETE")
         self.match("FROM")
-        self.nextToken()
+        self.match("<id>")
 
-        if self.token_atual == "WHERE":
+        if  self.token_atual == "WHERE":
             self.where()
-
         self.match(";")
+# Implemente a lógica para analisar um comando DELETE
    
-# TRUNCATE
     def truncate_statement(self):
         self.match("TRUNCATE")
         self.match("TABLE")
-        self.nextToken()
+        self.match("<id>")
         self.match(";")
+# Implemente a lógica para analisar um comando TRUNCATE
 
 # Exemplo de uso
-# query = input("Digite o comando SQL: ")
-query = "UPDATE Prova SET Resultado = 'Mesopotâmia' WHERE Questão = 10;"
+query = "SELECT <id>, <id>, <id>, <id> FROM <id> ;"
 parser = SQLParser(query)
 parser.parse()
-print("Analise completa com sucesso\n" + parser.query)
+print("Analise completa com sucesso")
