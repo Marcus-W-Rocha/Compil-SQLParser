@@ -178,7 +178,7 @@ class SQLParser:
 # Implemente a lógica para analisar um comando TRUNCATE
 
 # Exemplo de uso
-query = "SELECT <id>, <id>, <id>, <id> FROM <id> ;"
+query = "SELECT <id>, <id>, <id>, <id> FROM <id>;"
 parser = SQLParser(query)
 parser.parse()
 print("Analise completa com sucesso")
